@@ -1,0 +1,40 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "WonderCraftBP",
+    "description": "WonderCraftBPv0.1",
+    "uuid": "3e30d6ab-898c-4e72-b353-5c0244e7895a",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 70]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "9b20aa2b-6fe4-4ba6-85f9-da6af90563cb",
+      "description": "My Behavior Pack",
+      "version": [1, 0, 0]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "c15e2184-56db-455a-993f-78b58b42365a",
+      "description": "My Script Module",
+      "entry": "scripts/main.js",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "87bab6aa-8dee-430b-b484-bfdea2566d81",
+      "version": [1, 0, 0]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.6.0-beta"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.0.0"
+    }
+  ]
+}
