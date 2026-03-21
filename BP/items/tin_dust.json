@@ -10,7 +10,7 @@
     },
     "components": {
       "minecraft:max_stack_size": 64,
-      "minecraft:icon": "wondercraft:tin_dust",
+      "minecraft:icon": "tin_dust",
       "minecraft:display_name": {
         "value": "Tin Dust"
       }

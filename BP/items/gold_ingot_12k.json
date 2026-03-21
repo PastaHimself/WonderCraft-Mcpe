@@ -1,8 +1,8 @@
-{
+﻿{
   "format_version": "1.20.30",
   "minecraft:item": {
     "description": {
-      "identifier": "wondercraft:copper_dust",
+      "identifier": "wondercraft:gold_ingot_12k",
       "menu_category": {
         "category": "items",
         "group": "itemGroup.name.products"
@@ -10,9 +10,9 @@
     },
     "components": {
       "minecraft:max_stack_size": 64,
-      "minecraft:icon": "copper_dust",
+      "minecraft:icon": "gold_ingot_12k",
       "minecraft:display_name": {
-        "value": "Copper Dust"
+        "value": "12K Gold Ingot"
       }
     }
   }

@@ -1,8 +1,8 @@
-{
+﻿{
   "format_version": "1.20.30",
   "minecraft:item": {
     "description": {
-      "identifier": "wondercraft:copper_dust",
+      "identifier": "wondercraft:silver_ingot",
       "menu_category": {
         "category": "items",
         "group": "itemGroup.name.products"
@@ -10,9 +10,9 @@
     },
     "components": {
       "minecraft:max_stack_size": 64,
-      "minecraft:icon": "copper_dust",
+      "minecraft:icon": "silver_ingot",
       "minecraft:display_name": {
-        "value": "Copper Dust"
+        "value": "Silver Ingot"
       }
     }
   }

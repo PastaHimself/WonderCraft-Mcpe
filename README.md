@@ -4,4 +4,5 @@ WonderCraft is a Minecraft Bedrock add-on inspired by the progression and tech-s
 
 Task completed
 
-- dust --added 
+- dust --added
+- ingots --added

@@ -1,29 +1,129 @@
-{
+﻿{
   "resource_pack_name": "WonderCraft Resource Pack",
+  "texture_name": "atlas.items",
   "texture_data": {
-    "wondercraft:aluminum_dust": {
+    "aluminum_dust": {
       "textures": "textures/items/aluminum_dust"
     },
-    "wondercraft:copper_dust": {
+    "copper_dust": {
       "textures": "textures/items/copper_dust"
     },
-    "wondercraft:gold_dust": {
+    "gold_dust": {
       "textures": "textures/items/gold_dust"
     },
-    "wondercraft:iron_dust": {
+    "iron_dust": {
       "textures": "textures/items/iron_dust"
     },
-    "wondercraft:lead_dust": {
+    "lead_dust": {
       "textures": "textures/items/lead_dust"
     },
-    "wondercraft:silver_dust": {
+    "silver_dust": {
       "textures": "textures/items/silver_dust"
     },
-    "wondercraft:tin_dust": {
+    "tin_dust": {
       "textures": "textures/items/tin_dust"
     },
-    "wondercraft:zinc_dust": {
+    "zinc_dust": {
       "textures": "textures/items/zinc_dust"
+    },
+    "steel_ingot": {
+      "textures": "textures/items/steel_ingot"
+    },
+    "damascus_steel_ingot": {
+      "textures": "textures/items/damascus_steel_ingot"
+    },
+    "reinforced_alloy_ingot": {
+      "textures": "textures/items/reinforced_alloy_ingot"
+    },
+    "bronze_ingot": {
+      "textures": "textures/items/bronze_ingot"
+    },
+    "duralumin_ingot": {
+      "textures": "textures/items/duralumin_ingot"
+    },
+    "billon_ingot": {
+      "textures": "textures/items/billon_ingot"
+    },
+    "brass_ingot": {
+      "textures": "textures/items/brass_ingot"
+    },
+    "aluminum_brass_ingot": {
+      "textures": "textures/items/aluminum_brass_ingot"
+    },
+    "aluminum_bronze_ingot": {
+      "textures": "textures/items/aluminum_bronze_ingot"
+    },
+    "corinthian_bronze_ingot": {
+      "textures": "textures/items/corinthian_bronze_ingot"
+    },
+    "solder_ingot": {
+      "textures": "textures/items/solder_ingot"
+    },
+    "nickel_ingot": {
+      "textures": "textures/items/nickel_ingot"
+    },
+    "cobalt_ingot": {
+      "textures": "textures/items/cobalt_ingot"
+    },
+    "copper_ingot": {
+      "textures": "textures/items/copper_ingot"
+    },
+    "tin_ingot": {
+      "textures": "textures/items/tin_ingot"
+    },
+    "silver_ingot": {
+      "textures": "textures/items/silver_ingot"
+    },
+    "lead_ingot": {
+      "textures": "textures/items/lead_ingot"
+    },
+    "aluminum_ingot": {
+      "textures": "textures/items/aluminum_ingot"
+    },
+    "zinc_ingot": {
+      "textures": "textures/items/zinc_ingot"
+    },
+    "magnesium_ingot": {
+      "textures": "textures/items/magnesium_ingot"
+    },
+    "redstone_alloy_ingot": {
+      "textures": "textures/items/redstone_alloy_ingot"
+    },
+    "gold_ingot_4k": {
+      "textures": "textures/items/gold_ingot_4k"
+    },
+    "gold_ingot_6k": {
+      "textures": "textures/items/gold_ingot_6k"
+    },
+    "gold_ingot_8k": {
+      "textures": "textures/items/gold_ingot_8k"
+    },
+    "gold_ingot_10k": {
+      "textures": "textures/items/gold_ingot_10k"
+    },
+    "gold_ingot_12k": {
+      "textures": "textures/items/gold_ingot_12k"
+    },
+    "gold_ingot_14k": {
+      "textures": "textures/items/gold_ingot_14k"
+    },
+    "gold_ingot_16k": {
+      "textures": "textures/items/gold_ingot_16k"
+    },
+    "gold_ingot_18k": {
+      "textures": "textures/items/gold_ingot_18k"
+    },
+    "gold_ingot_20k": {
+      "textures": "textures/items/gold_ingot_20k"
+    },
+    "gold_ingot_22k": {
+      "textures": "textures/items/gold_ingot_22k"
+    },
+    "gold_ingot_24k": {
+      "textures": "textures/items/gold_ingot_24k"
+    },
+    "custom_ingot": {
+      "textures": "textures/items/custom_ingot"
     }
   }
 }
