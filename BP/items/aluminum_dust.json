@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:aluminum_dust"
       },
-      "minecraft:display_name": {
-        "value": "Aluminum Dust"
-      }
+      "minecraft:display_name": "Aluminum Dust"
     }
   }
 }

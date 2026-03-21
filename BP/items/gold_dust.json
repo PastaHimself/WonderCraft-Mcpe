@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:gold_dust"
       },
-      "minecraft:display_name": {
-        "value": "Gold Dust"
-      }
+      "minecraft:display_name": "Gold Dust"
     }
   }
 }

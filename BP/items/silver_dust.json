@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:silver_dust"
       },
-      "minecraft:display_name": {
-        "value": "Silver Dust"
-      }
+      "minecraft:display_name": "Silver Dust"
     }
   }
 }

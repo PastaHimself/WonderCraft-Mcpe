@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:iron_dust"
       },
-      "minecraft:display_name": {
-        "value": "Iron Dust"
-      }
+      "minecraft:display_name": "Iron Dust"
     }
   }
 }

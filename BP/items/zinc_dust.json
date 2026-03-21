@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:zinc_dust"
       },
-      "minecraft:display_name": {
-        "value": "Zinc Dust"
-      }
+      "minecraft:display_name": "Zinc Dust"
     }
   }
 }

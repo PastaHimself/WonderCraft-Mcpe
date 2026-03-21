@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:tin_dust"
       },
-      "minecraft:display_name": {
-        "value": "Tin Dust"
-      }
+      "minecraft:display_name": "Tin Dust"
     }
   }
 }

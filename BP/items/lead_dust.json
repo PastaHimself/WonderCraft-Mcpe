@@ -13,9 +13,7 @@
       "minecraft:icon": {
         "texture": "wondercraft:lead_dust"
       },
-      "minecraft:display_name": {
-        "value": "Lead Dust"
-      }
+      "minecraft:display_name": "Lead Dust"
     }
   }
 }
