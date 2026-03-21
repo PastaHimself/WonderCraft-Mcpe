@@ -1,8 +1,8 @@
 ﻿{
   "format_version": 3,
   "header": {
-    "name": "WonderCraft Add-on Resource Pack",
-    "description": "Resource pack stub for Minecraft 1.26.0 addons",
+    "name": "WonderCraft RP 0.1",
+    "description": "WonderCraft BP 0.1",
     "uuid": "2b01c8fa-9fb9-4fa0-aa0f-9a168cd48638",
     "version": "1.0.0",
     "min_engine_version": "1.26.0"

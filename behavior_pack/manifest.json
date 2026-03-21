@@ -1,8 +1,8 @@
 ﻿{
   "format_version": 3,
   "header": {
-    "name": "WonderCraft Add-on Behavior Pack",
-    "description": "Skeleton behavior pack targeting Minecraft 1.26.0",
+    "name": "WonderCraf0t BP 0.1",
+    "description": "WonderCraft BP 0.1",
     "uuid": "cb871f4d-7bf3-4270-ba7a-b638eee86ae6",
     "version": "1.0.0",
     "min_engine_version": "1.26.0"
