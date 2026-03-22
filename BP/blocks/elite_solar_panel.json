@@ -13,27 +13,27 @@
       },
       "minecraft:material_instances": {
         "north": {
-          "texture": "elite_solar_panel_side",
+          "texture": "oxidized_cut_copper",
           "render_method": "opaque"
         },
         "south": {
-          "texture": "elite_solar_panel_side",
+          "texture": "oxidized_cut_copper",
           "render_method": "opaque"
         },
         "east": {
-          "texture": "elite_solar_panel_side",
+          "texture": "oxidized_cut_copper",
           "render_method": "opaque"
         },
         "west": {
-          "texture": "elite_solar_panel_side",
+          "texture": "oxidized_cut_copper",
           "render_method": "opaque"
         },
         "up": {
-          "texture": "elite_solar_panel_top",
+          "texture": "oxidized_copper",
           "render_method": "opaque"
         },
         "down": {
-          "texture": "elite_solar_panel_bottom",
+          "texture": "copper_block",
           "render_method": "opaque"
         }
       },
@@ -43,27 +43,27 @@
         },
         "material_instances": {
           "north": {
-            "texture": "elite_solar_panel_side",
+            "texture": "oxidized_cut_copper",
             "render_method": "opaque"
           },
           "south": {
-            "texture": "elite_solar_panel_side",
+            "texture": "oxidized_cut_copper",
             "render_method": "opaque"
           },
           "east": {
-            "texture": "elite_solar_panel_side",
+            "texture": "oxidized_cut_copper",
             "render_method": "opaque"
           },
           "west": {
-            "texture": "elite_solar_panel_side",
+            "texture": "oxidized_cut_copper",
             "render_method": "opaque"
           },
           "up": {
-            "texture": "elite_solar_panel_top",
+            "texture": "oxidized_copper",
             "render_method": "opaque"
           },
           "down": {
-            "texture": "elite_solar_panel_bottom",
+            "texture": "copper_block",
             "render_method": "opaque"
           }
         }
