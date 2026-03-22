@@ -14,6 +14,12 @@
       "version": "1.0.0"
     }
   ],
+  "dependencies": [
+    {
+      "uuid": "cb871f4d-7bf3-4270-ba7a-b638eee86ae6",
+      "version": "1.0.0"
+    }
+  ],
   "metadata": {
     "authors": [
       "WonderCraft Team"
