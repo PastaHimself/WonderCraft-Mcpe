@@ -3,7 +3,8 @@
 WonderCraft is a Minecraft Bedrock add-on inspired by the progression and tech-style gameplay of Slimefun, adapted for Bedrock Edition.
 
 
-* Ore Washer: converts cobblestone into dust when right-clicked with cobblestone in the selected hotbar slot.
+* Ore Washer: opens a Chest-UI machine screen, converts cobblestone into dust through its input/output buffers, and supports hopper automation. Requires 25 W/s from a connected energy regulator.
+* Ore Washer controls: click the input slot while holding cobblestone in your selected hotbar slot, click an output slot to collect dust, or place hoppers above and below for automation.
 **Solar Panels** (needs recipe)
 
 Basic Solar Panel → 10 W/s
@@ -68,3 +69,12 @@ INGOTS (needs recipe)
 * steel_ingot
 * tin_ingot
 * zinc_ingot
+
+# Third-Party Notices
+
+## Chest-UI
+
+- Source: https://github.com/Herobrine643928/Chest-UI
+- License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+- Used files: `BP/scripts/extensions/*`, `RP/ui/*`, `RP/textures/ui/*`
+- Purpose: Chest-style GUI support for the ore washer and related scripted forms
