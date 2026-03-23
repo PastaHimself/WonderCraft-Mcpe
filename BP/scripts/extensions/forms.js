@@ -6,9 +6,7 @@ import { typeIdToDataId, typeIdToID } from './typeIds.js';
 class ChestFormData {
 	#titleText; #buttonArray;
 	constructor(size = 'small') {
-		const sizing = size === 2 || size === '2'
-			? ['§c§h§e§s§t§0§2§r', 2]
-			: CHEST_UI_SIZES.get(size) ?? ['§c§h§e§s§t§2§7§r', 27];
+		const sizing = CHEST_UI_SIZES.get(size) ?? ['§c§h§e§s§t§2§7§r', 27];
 		/** @internal */
 		this.#titleText = { rawtext: [{ text: `${sizing[0]}` }] };
 		/** @internal */

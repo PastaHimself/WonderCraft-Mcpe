@@ -455,7 +455,7 @@ async function openOreWasherMenu(player, block) {
 }
 
 function buildOreWasherForm(node, state) {
-  const form = new ChestFormData(2);
+  const form = new ChestFormData("9");
   const progressText =
     state.activeOutputSlot === null ? "Idle" : `${state.progress}/${ORE_WASHER_CYCLE_TICKS}`;
   const powerText = `Power: ${ORE_WASHER_WATTS} W/s`;
