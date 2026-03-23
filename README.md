@@ -1,4 +1,4 @@
-# WonderCraft - Slimefun-Inspired Bedrock Add-on
+# WonderCraft - Slimefun-Inspired Bedrock Add-on (the addon is st)
 
 WonderCraft is a Minecraft Bedrock add-on inspired by the progression and tech-style gameplay of Slimefun, adapted for Bedrock Edition.
 
@@ -6,8 +6,14 @@ WonderCraft is a Minecraft Bedrock add-on inspired by the progression and tech-s
 * Ore Washer: converts cobblestone into dust when right-clicked with cobblestone in the selected hotbar slot.
 **Solar Panels** (needs recipe)
 
-* Basic Solar Panel: 10 W/s
-* Reinforced Solar Panel: 60 W/s
+Basic Solar Panel → 10 W/s
+Advanced Solar Panel → 25 W/s
+Reinforced Solar Panel → 60 W/s
+Industrial Solar Panel → 150 W/s
+Elite Solar Panel → 400 W/s
+Quantum Solar Panel → 1000 W/s
+
+Energy components
 * Energy Regulator: distributes energy to connected systems.
 * Energy Connector: transfers energy between blocks.
 
