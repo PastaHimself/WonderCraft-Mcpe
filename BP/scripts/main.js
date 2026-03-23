@@ -1,12 +1,13 @@
-import { ItemStack, system, world } from "@minecraft/server";
 import { ChestFormData } from "./extensions/forms.js";
-
+import { ItemStack, system, world } from "@minecraft/server";
 const ORE_WASHER_COMPONENT = "wondercraft:ore_washer";
 const ORE_WASHER_INPUT = "minecraft:cobblestone";
 const ORE_WASHER_WATTS = 25;
 const ORE_WASHER_CYCLE_TICKS = 20;
+const ORE_WASHER_COOLDOWN_TICKS = 20;
 const ORE_WASHER_INPUT_CAPACITY = 64;
 const ORE_WASHER_OUTPUT_CAPACITY = 64;
+const ORE_WASHER_PROGRESS_HOLOGRAM_TAG = "wondercraft_ore_washer_progress";
 const ORE_WASHER_OUTPUTS = [
   "wondercraft:aluminum_dust",
   "wondercraft:copper_dust",
@@ -118,15 +119,18 @@ const DIRECTIONS = [
 const trackedNodes = new Map();
 const regulatorCharge = new Map();
 const washerStates = new Map();
+const washerCooldowns = new Map();
+const washerHologramEntityIds = new Map();
 const hologramEntityIds = new Map();
 const openWasherMenus = new Set();
 
 let stateDirty = false;
+let currentTick = 0;
 
 system.beforeEvents.startup.subscribe((initEvent) => {
   initEvent.blockComponentRegistry.registerCustomComponent(ORE_WASHER_COMPONENT, {
     onPlayerInteract: (event) => {
-      void openOreWasherMenu(event.player, event.block);
+      handleOreWasherInteract(event.player, event.block);
     },
   });
 });
@@ -136,12 +140,13 @@ system.run(() => {
 });
 
 system.runInterval(() => {
-  refreshEnergySystem();
-}, 20);
+  currentTick += 1;
+  refreshOreWasherCooldowns();
+}, 1);
 
 system.runInterval(() => {
-  refreshOreWasherSystem();
-}, 1);
+  refreshEnergySystem();
+}, 20);
 
 function refreshEnergySystem() {
   discoverEnergyBlocksNearPlayers();
@@ -217,6 +222,8 @@ function pruneTrackedNodes() {
 
     if (node.descriptor.kind === "consumer") {
       washerStates.delete(key);
+      washerCooldowns.delete(key);
+      removeOreWasherHologram(node);
       stateDirty = true;
     }
 
@@ -491,6 +498,186 @@ function buildOreWasherForm(node, state) {
   );
 
   return form;
+}
+
+function handleOreWasherInteract(player, block) {
+  registerEnergyNode(block);
+  const nodeKey = makeNodeKey(block.dimension.id, floorLocation(block.location));
+  const node = trackedNodes.get(nodeKey);
+  if (!node || node.descriptor.kind !== "consumer") {
+    return;
+  }
+
+  const cooldownUntil = washerCooldowns.get(nodeKey) ?? 0;
+  if (currentTick < cooldownUntil) {
+    const remainingTicks = cooldownUntil - currentTick;
+    syncOreWasherProgressHologram(node, remainingTicks);
+    playMachineSound(block, "random.click", 0.7, 0.85);
+    return;
+  }
+
+  const container = getPlayerInventoryContainer(player);
+  if (!container) {
+    return;
+  }
+
+  const slot = container.getSlot(player.selectedSlotIndex);
+  const item = slot.getItem();
+  if (!item || item.typeId !== ORE_WASHER_INPUT || item.amount < 1) {
+    playMachineSound(block, "note.bass", 0.8, 0.8);
+    return;
+  }
+
+  const outputType = ORE_WASHER_OUTPUTS[Math.floor(Math.random() * ORE_WASHER_OUTPUTS.length)];
+  if (!canInsertItemsIntoContainer(container, outputType, 1)) {
+    playMachineSound(block, "note.bass", 0.8, 0.8);
+    return;
+  }
+
+  discoverEnergyBlocksNearPlayers();
+  simulateNetworks();
+  if (!consumeEnergyForBlock(block, ORE_WASHER_WATTS)) {
+    playMachineSound(block, "note.bass", 0.8, 0.8);
+    return;
+  }
+
+  const remainingAmount = item.amount - 1;
+  if (remainingAmount > 0) {
+    item.amount = remainingAmount;
+    slot.setItem(item);
+  } else {
+    slot.setItem(undefined);
+  }
+
+  insertItemsIntoContainer(container, outputType, 1);
+  washerCooldowns.set(nodeKey, currentTick + ORE_WASHER_COOLDOWN_TICKS);
+  syncOreWasherProgressHologram(node, ORE_WASHER_COOLDOWN_TICKS);
+  playMachineSound(block, "random.pop", 1, 1.1);
+  stateDirty = true;
+}
+
+function refreshOreWasherCooldowns() {
+  for (const [key, cooldownUntil] of washerCooldowns) {
+    const node = trackedNodes.get(key);
+    if (!node || node.descriptor.kind !== "consumer") {
+      washerCooldowns.delete(key);
+      if (node) {
+        removeOreWasherHologram(node);
+      }
+      continue;
+    }
+
+    const remainingTicks = cooldownUntil - currentTick;
+    if (remainingTicks > 0) {
+      syncOreWasherProgressHologram(node, remainingTicks);
+      continue;
+    }
+
+    washerCooldowns.delete(key);
+    removeOreWasherHologram(node);
+  }
+}
+
+function syncOreWasherProgressHologram(node, remainingTicks) {
+  const hologram = getOrCreateOreWasherHologramForNode(node);
+  if (!hologram) {
+    return;
+  }
+
+  const text = formatOreWasherCooldownText(remainingTicks);
+
+  hologram.setProperty("traye:visible", true);
+  hologram.setProperty("traye:see_through_walls", false);
+  hologram.teleport(centeredAbove(node.location, 1.65), {
+    dimension: getDimensionSafe(node.dimensionId),
+  });
+  writeWattsToEntity(hologram, text);
+}
+
+function formatOreWasherCooldownText(remainingTicks) {
+  const clampedTicks = Math.max(remainingTicks, 0);
+  const seconds = (clampedTicks / 20).toFixed(1);
+
+  if (clampedTicks <= 0) {
+    return "Ready";
+  }
+
+  return `Cooldown ${seconds}s`;
+}
+
+function getOrCreateOreWasherHologramForNode(node) {
+  const dimension = getDimensionSafe(node.dimensionId);
+  if (!dimension) {
+    return undefined;
+  }
+
+  const existingId = washerHologramEntityIds.get(node.key);
+  if (existingId) {
+    const existingEntity = world.getEntity(existingId);
+    if (entityIsValid(existingEntity)) {
+      return existingEntity;
+    }
+  }
+
+  const specificTag = makeOreWasherHologramTag(node.key);
+  const nearby = dimension.getEntities({
+    type: HOLOGRAM_TYPE_ID,
+    tags: [ORE_WASHER_PROGRESS_HOLOGRAM_TAG, specificTag],
+    location: centeredAbove(node.location, 1.65),
+    maxDistance: 2,
+  });
+
+  if (nearby.length > 0) {
+    const [primary, ...duplicates] = nearby;
+    for (const duplicate of duplicates) {
+      duplicate.remove();
+    }
+
+    washerHologramEntityIds.set(node.key, primary.id);
+    return primary;
+  }
+
+  const hologram = spawnCustomEntity(dimension, HOLOGRAM_TYPE_ID, centeredAbove(node.location, 1.65));
+  hologram.addTag(ORE_WASHER_PROGRESS_HOLOGRAM_TAG);
+  hologram.addTag(specificTag);
+  hologram.setProperty("traye:visible", true);
+  hologram.setProperty("traye:see_through_walls", false);
+  washerHologramEntityIds.set(node.key, hologram.id);
+  return hologram;
+}
+
+function removeOreWasherHologram(node) {
+  const dimension = getDimensionSafe(node.dimensionId);
+  if (!dimension) {
+    washerHologramEntityIds.delete(node.key);
+    return;
+  }
+
+  const specificTag = makeOreWasherHologramTag(node.key);
+  const holograms = dimension.getEntities({
+    type: HOLOGRAM_TYPE_ID,
+    tags: [ORE_WASHER_PROGRESS_HOLOGRAM_TAG, specificTag],
+    location: centeredAbove(node.location, 1.65),
+    maxDistance: 4,
+  });
+
+  for (const hologram of holograms) {
+    hologram.remove();
+  }
+
+  washerHologramEntityIds.delete(node.key);
+}
+
+function makeOreWasherHologramTag(nodeKey) {
+  return `wc_ore_${nodeKey.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+}
+
+function playMachineSound(block, soundId, volume = 1, pitch = 1) {
+  try {
+    block.dimension.playSound(soundId, block.location, { volume, pitch });
+  } catch {
+    // Sound playback failure should not block the machine.
+  }
 }
 
 function handleWasherMenuSelection(player, node, state, selection) {
@@ -771,6 +958,31 @@ function removeItemsFromContainer(container, itemType, amount) {
   }
 
   return amount - remaining;
+}
+
+function canInsertItemsIntoContainer(container, itemType, amount) {
+  let remaining = amount;
+
+  for (let slotIndex = 0; slotIndex < container.size && remaining > 0; slotIndex++) {
+    const existing = container.getSlot(slotIndex).getItem();
+    if (!existing) {
+      remaining -= Math.min(64, remaining);
+      continue;
+    }
+
+    if (existing.typeId !== itemType) {
+      continue;
+    }
+
+    const room = Math.max(64 - existing.amount, 0);
+    if (room <= 0) {
+      continue;
+    }
+
+    remaining -= Math.min(room, remaining);
+  }
+
+  return remaining <= 0;
 }
 
 function getReadableName(typeId) {

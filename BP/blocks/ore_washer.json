@@ -28,6 +28,14 @@
           }
         }
       },
+      "minecraft:selection_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
+      "minecraft:collision_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
       "minecraft:loot": "loot_tables/blocks/ore_washer.json",
       "wondercraft:ore_washer": {}
     }
