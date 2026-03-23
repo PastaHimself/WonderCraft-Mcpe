@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "wondercraft-vscode",
+  "version": "1.0.0",
+  "dependencies": {
+    "@minecraft/common": "1.2.0",
+    "@minecraft/server": "2.6.0-beta",
+    "@minecraft/server-ui": "2.1.0-beta",
+    "@minecraft/vanilla-data": "1.26.2"
+  }
+}

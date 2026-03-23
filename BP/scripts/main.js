@@ -890,7 +890,7 @@ function getOrCreateHologramForNode(node) {
     return primary;
   }
 
-  const hologram = dimension.spawnEntity(HOLOGRAM_TYPE_ID, centeredAbove(node.location, 1.65));
+  const hologram = spawnCustomEntity(dimension, HOLOGRAM_TYPE_ID, centeredAbove(node.location, 1.65));
   hologram.addTag(HOLOGRAM_TAG);
   hologram.addTag(specificTag);
   hologram.setProperty("traye:visible", true);
@@ -916,6 +916,18 @@ function removeHologramForNode(node) {
   for (const hologram of holograms) {
     hologram.remove();
   }
+}
+
+/**
+ * Spawns a custom entity without narrowing the identifier to the vanilla-only
+ * overload used by the default Bedrock typings.
+ *
+ * @param {import("@minecraft/server").Dimension} dimension
+ * @param {string} typeId
+ * @param {import("@minecraft/server").Vector3} location
+ */
+function spawnCustomEntity(dimension, typeId, location) {
+  return dimension.spawnEntity(/** @type {any} */ (typeId), location);
 }
 
 function writeWattsToEntity(textEntity, message) {
