@@ -26,6 +26,7 @@ const ORE_WASHER_OUTPUTS = [
 ];
 
 const ENERGY_STATE_KEY = "wondercraft:energy_state";
+const ENERGY_REGULATOR_TYPE_ID = "wondercraft:energy_regulator";
 const HOLOGRAM_TYPE_ID = "traye:text_entity";
 const HOLOGRAM_TAG = "wondercraft_energy_hologram";
 const DISCOVERY_RADIUS = 16;
@@ -283,9 +284,7 @@ function applyEnergyNetwork(nodes) {
   }
 
   if (generators.length === 0) {
-    for (const storage of storages) {
-      syncRegulatorHologram(storage, 0);
-    }
+    syncStorageDisplays(storages);
     return;
   }
 
@@ -312,10 +311,6 @@ function applyEnergyNetwork(nodes) {
 
   const totalBudget = storageBudgets.reduce((sum, storage) => sum + storage.budget, 0);
   const acceptedTotal = Math.min(totalAvailable, totalBudget);
-  const acceptedByStorage = new Map(
-    storages.map((storageNode) => [storageNode.key, 0]),
-  );
-
   let remaining = acceptedTotal;
   for (const storage of storageBudgets) {
     if (remaining <= 0) {
@@ -325,15 +320,11 @@ function applyEnergyNetwork(nodes) {
     const accepted = Math.min(storage.budget, remaining);
     const current = storageCharge.get(storage.node.key) ?? 0;
     storageCharge.set(storage.node.key, current + accepted);
-    acceptedByStorage.set(storage.node.key, accepted);
     remaining -= accepted;
     stateDirty = true;
   }
 
-  for (const storage of storages) {
-    const accepted = acceptedByStorage.get(storage.key) ?? 0;
-    syncRegulatorHologram(storage, accepted);
-  }
+  syncStorageDisplays(storages);
 }
 
 function refreshOreWasher(node) {
@@ -1038,6 +1029,7 @@ function consumeEnergyForBlock(target, watts) {
     stateDirty = true;
   }
 
+  syncStorageDisplays(storages);
   return remaining <= 0;
 }
 
@@ -1069,6 +1061,21 @@ function getSolarProduction(node) {
   }
 
   return Math.floor(node.descriptor.rate * getWeatherMultiplier(dimension));
+}
+
+function syncStorageDisplays(storages) {
+  const totalStored = storages.reduce((sum, storage) => {
+    return sum + (storageCharge.get(storage.key) ?? 0);
+  }, 0);
+
+  for (const storage of storages) {
+    if (storage.typeId === ENERGY_REGULATOR_TYPE_ID) {
+      syncRegulatorHologram(storage, totalStored);
+      continue;
+    }
+
+    removeHologramForNode(storage);
+  }
 }
 
 function syncRegulatorHologram(node, watts) {
