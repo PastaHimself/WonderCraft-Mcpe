@@ -3,7 +3,16 @@
   "wondercraft:advanced_solar_panel": {
     "sound": "metal"
   },
+  "wondercraft:advanced_battery": {
+    "sound": "metal"
+  },
+  "wondercraft:basic_battery": {
+    "sound": "metal"
+  },
   "wondercraft:basic_solar_panel": {
+    "sound": "metal"
+  },
+  "wondercraft:elite_battery": {
     "sound": "metal"
   },
   "wondercraft:elite_solar_panel": {
@@ -15,13 +24,22 @@
   "wondercraft:energy_regulator": {
     "sound": "metal"
   },
+  "wondercraft:industrial_battery": {
+    "sound": "metal"
+  },
   "wondercraft:industrial_solar_panel": {
     "sound": "metal"
   },
   "wondercraft:ore_washer": {
     "sound": "stone"
   },
+  "wondercraft:quantum_battery": {
+    "sound": "metal"
+  },
   "wondercraft:quantum_solar_panel": {
+    "sound": "metal"
+  },
+  "wondercraft:reinforced_battery": {
     "sound": "metal"
   },
   "wondercraft:reinforced_solar_panel": {

@@ -1,4 +1,10 @@
 import { ChestFormData } from "./extensions/forms.js";
+import {
+  createEnergyNodeDefinitions,
+  ensureStorageCharge,
+  loadStorageChargeState,
+  serializeStorageChargeState,
+} from "./energy_storage_units.js";
 import { ItemStack, system, world } from "@minecraft/server";
 const ORE_WASHER_COMPONENT = "wondercraft:ore_washer";
 const ORE_WASHER_INPUT = "minecraft:cobblestone";
@@ -24,14 +30,9 @@ const HOLOGRAM_TYPE_ID = "traye:text_entity";
 const HOLOGRAM_TAG = "wondercraft_energy_hologram";
 const DISCOVERY_RADIUS = 16;
 const DISCOVERY_HEIGHT = 8;
-const REGULATOR_DEFAULTS = {
-  capacity: 10000,
-  maxInput: 2000,
-  maxOutput: 2000,
-};
 const OVERWORLD_IDS = new Set(["overworld", "minecraft:overworld"]);
 
-const ENERGY_NODE_DEFS = {
+const NON_STORAGE_ENERGY_NODE_DEFS = {
   "wondercraft:basic_solar_panel": {
     kind: "generator",
     rate: 10,
@@ -96,15 +97,8 @@ const ENERGY_NODE_DEFS = {
     capacity: 0,
     canGenerate: false,
   },
-  "wondercraft:energy_regulator": {
-    kind: "storage",
-    rate: 0,
-    maxInput: REGULATOR_DEFAULTS.maxInput,
-    maxOutput: REGULATOR_DEFAULTS.maxOutput,
-    capacity: REGULATOR_DEFAULTS.capacity,
-    canGenerate: false,
-  },
 };
+const ENERGY_NODE_DEFS = createEnergyNodeDefinitions(NON_STORAGE_ENERGY_NODE_DEFS);
 
 const ENERGY_BLOCK_IDS = new Set(Object.keys(ENERGY_NODE_DEFS));
 const DIRECTIONS = [
@@ -117,7 +111,7 @@ const DIRECTIONS = [
 ];
 
 const trackedNodes = new Map();
-const regulatorCharge = new Map();
+const storageCharge = new Map();
 const washerStates = new Map();
 const washerCooldowns = new Map();
 const washerHologramEntityIds = new Map();
@@ -142,11 +136,13 @@ system.run(() => {
 system.runInterval(() => {
   currentTick += 1;
   refreshOreWasherCooldowns();
-}, 1);
 
-system.runInterval(() => {
-  refreshEnergySystem();
-}, 20);
+  if (currentTick % 20 === 0) {
+    refreshEnergySystem();
+  }
+
+  refreshOreWasherSystem();
+}, 1);
 
 function refreshEnergySystem() {
   discoverEnergyBlocksNearPlayers();
@@ -215,7 +211,7 @@ function pruneTrackedNodes() {
     hologramEntityIds.delete(key);
 
     if (node.descriptor.kind === "storage") {
-      regulatorCharge.delete(key);
+      storageCharge.delete(key);
       removeHologramForNode(node);
       stateDirty = true;
     }
@@ -306,7 +302,7 @@ function applyEnergyNetwork(nodes) {
   const totalAvailable = availableByPanel.reduce((sum, panel) => sum + panel.watts, 0);
 
   const storageBudgets = storages.map((storageNode) => {
-    const current = regulatorCharge.get(storageNode.key) ?? 0;
+    const current = storageCharge.get(storageNode.key) ?? 0;
     const freeSpace = Math.max(storageNode.descriptor.capacity - current, 0);
     return {
       node: storageNode,
@@ -327,8 +323,8 @@ function applyEnergyNetwork(nodes) {
     }
 
     const accepted = Math.min(storage.budget, remaining);
-    const current = regulatorCharge.get(storage.node.key) ?? 0;
-    regulatorCharge.set(storage.node.key, current + accepted);
+    const current = storageCharge.get(storage.node.key) ?? 0;
+    storageCharge.set(storage.node.key, current + accepted);
     acceptedByStorage.set(storage.node.key, accepted);
     remaining -= accepted;
     stateDirty = true;
@@ -1013,7 +1009,7 @@ function consumeEnergyForBlock(target, watts) {
   const network = collectNetwork(node, new Set());
   const storages = network.filter((networkNode) => networkNode.descriptor.kind === "storage");
   const available = storages.reduce(
-    (sum, storage) => sum + (regulatorCharge.get(storage.key) ?? 0),
+    (sum, storage) => sum + (storageCharge.get(storage.key) ?? 0),
     0,
   );
 
@@ -1023,7 +1019,7 @@ function consumeEnergyForBlock(target, watts) {
 
   let remaining = watts;
   const orderedStorages = [...storages].sort((left, right) => {
-    return (regulatorCharge.get(right.key) ?? 0) - (regulatorCharge.get(left.key) ?? 0);
+    return (storageCharge.get(right.key) ?? 0) - (storageCharge.get(left.key) ?? 0);
   });
 
   for (const storage of orderedStorages) {
@@ -1031,13 +1027,13 @@ function consumeEnergyForBlock(target, watts) {
       break;
     }
 
-    const current = regulatorCharge.get(storage.key) ?? 0;
-    const used = Math.min(current, remaining);
+    const current = storageCharge.get(storage.key) ?? 0;
+    const used = Math.min(current, storage.descriptor.maxOutput, remaining);
     if (used <= 0) {
       continue;
     }
 
-    regulatorCharge.set(storage.key, current - used);
+    storageCharge.set(storage.key, current - used);
     remaining -= used;
     stateDirty = true;
   }
@@ -1219,9 +1215,8 @@ function registerEnergyNode(block) {
     descriptor,
   });
 
-  if (descriptor.kind === "storage" && !regulatorCharge.has(key)) {
-    regulatorCharge.set(key, 0);
-    stateDirty = true;
+  if (descriptor.kind === "storage") {
+    stateDirty = ensureStorageCharge(storageCharge, key) || stateDirty;
   }
 }
 
@@ -1282,10 +1277,11 @@ function loadEnergyState() {
       return;
     }
 
-    const parsed = JSON.parse(rawState);
-    const savedRegulators = parsed.regulators ?? {};
-    for (const [key, charge] of Object.entries(savedRegulators)) {
-      regulatorCharge.set(key, Number(charge) || 0);
+    const parsed = loadStorageChargeState(rawState, storageCharge);
+    if (!parsed) {
+      storageCharge.clear();
+      washerStates.clear();
+      return;
     }
 
     const savedWashers = parsed.washers ?? {};
@@ -1293,7 +1289,7 @@ function loadEnergyState() {
       washerStates.set(key, normalizeWasherState(washerState));
     }
   } catch {
-    regulatorCharge.clear();
+    storageCharge.clear();
     washerStates.clear();
   }
 }
@@ -1308,10 +1304,7 @@ function saveEnergyStateIfDirty() {
     washers[key] = serializeWasherState(state);
   }
 
-  const serialized = JSON.stringify({
-    regulators: Object.fromEntries(regulatorCharge),
-    washers,
-  });
+  const serialized = serializeStorageChargeState(storageCharge, { washers });
 
   try {
     world.setDynamicProperty(ENERGY_STATE_KEY, serialized);

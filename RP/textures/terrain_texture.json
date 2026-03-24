@@ -13,6 +13,12 @@
     "advanced_solar_panel_top": {
       "textures": "textures/blocks/advanced_solar_panel_top"
     },
+    "advanced_battery": {
+      "textures": "textures/blocks/advanced_battery"
+    },
+    "basic_battery": {
+      "textures": "textures/blocks/basic_battery"
+    },
     "basic_solar_panel_bottom": {
       "textures": "textures/blocks/basic_solar_panel_bottom"
     },
@@ -37,8 +43,14 @@
     "energy_regulator": {
       "textures": "textures/blocks/energy_regulator"
     },
+    "elite_battery": {
+      "textures": "textures/blocks/elite_battery"
+    },
     "industrial_solar_panel_bottom": {
       "textures": "textures/blocks/industrial_solar_panel_bottom"
+    },
+    "industrial_battery": {
+      "textures": "textures/blocks/industrial_battery"
     },
     "industrial_solar_panel_side": {
       "textures": "textures/blocks/industrial_solar_panel_side"
@@ -49,6 +61,9 @@
     "quantum_solar_panel_bottom": {
       "textures": "textures/blocks/quantum_solar_panel_bottom"
     },
+    "quantum_battery": {
+      "textures": "textures/blocks/quantum_battery"
+    },
     "quantum_solar_panel_side": {
       "textures": "textures/blocks/quantum_solar_panel_side"
     },
@@ -57,6 +72,9 @@
     },
     "reinforced_solar_panel_bottom": {
       "textures": "textures/blocks/reinforced_solar_panel_bottom"
+    },
+    "reinforced_battery": {
+      "textures": "textures/blocks/reinforced_battery"
     },
     "reinforced_solar_panel_side": {
       "textures": "textures/blocks/reinforced_solar_panel_side"

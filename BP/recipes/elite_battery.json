@@ -1,0 +1,26 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "wondercraft:elite_battery"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "wondercraft:industrial_battery"
+      },
+      {
+        "item": "minecraft:copper_block"
+      },
+      {
+        "item": "minecraft:gold_block"
+      }
+    ],
+    "result": {
+      "item": "wondercraft:elite_battery",
+      "count": 1
+    }
+  }
+}

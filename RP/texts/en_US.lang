@@ -1,4 +1,10 @@
 tile.wondercraft:ore_washer.name=Ore Washer
+tile.wondercraft:basic_battery.name=Basic Battery
+tile.wondercraft:advanced_battery.name=Advanced Battery
+tile.wondercraft:reinforced_battery.name=Reinforced Battery
+tile.wondercraft:industrial_battery.name=Industrial Battery
+tile.wondercraft:elite_battery.name=Elite Battery
+tile.wondercraft:quantum_battery.name=Quantum Battery
 tile.wondercraft:basic_solar_panel.name=Basic Solar Panel
 tile.wondercraft:advanced_solar_panel.name=Advanced Solar Panel
 tile.wondercraft:reinforced_solar_panel.name=Reinforced Solar Panel

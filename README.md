@@ -70,6 +70,26 @@ INGOTS (needs recipe)
 * tin_ingot
 * zinc_ingot
 
+Energy Storage Units
+Basic Battery
+Recipe: Copper Ingot + Redstone + Iron Ingot
+Storage: 512 W
+Advanced Battery
+Recipe: Basic Battery + Lapis + Gold Ingot
+Storage: 2,048 W
+Reinforced Battery
+Recipe: Advanced Battery + Diamond + Amethyst
+Storage: 8,192 W
+Industrial Battery
+Recipe: Reinforced Battery + Netherite + Emerald
+Storage: 32,768 W
+Recipe: Industrial Battery + Copper Block + Gold Block
+Storage: 131,072 W
+Quantum Battery
+Recipe: Elite Battery + Nether Star + Amethyst Block
+Storage: 1,048,576 W this is my energy implmentation 
+
+
 # Third-Party Notices
 
 ## Chest-UI
