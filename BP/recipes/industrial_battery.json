@@ -7,6 +7,11 @@
     "tags": [
       "crafting_table"
     ],
+    "unlock": [
+      {
+        "item": "wondercraft:industrial_battery"
+      }
+    ],
     "ingredients": [
       {
         "item": "wondercraft:reinforced_battery"

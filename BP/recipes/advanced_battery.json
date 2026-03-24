@@ -7,6 +7,11 @@
     "tags": [
       "crafting_table"
     ],
+    "unlock": [
+      {
+        "item": "wondercraft:advanced_battery"
+      }
+    ],
     "ingredients": [
       {
         "item": "wondercraft:basic_battery"

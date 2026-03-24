@@ -7,6 +7,11 @@
     "tags": [
       "crafting_table"
     ],
+    "unlock": [
+      {
+        "item": "wondercraft:quantum_battery"
+      }
+    ],
     "ingredients": [
       {
         "item": "wondercraft:elite_battery"

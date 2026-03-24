@@ -184,9 +184,44 @@ function discoverEnergyBlocksNearPlayers() {
             continue;
           }
 
-          registerEnergyNode(block);
+          discoverConnectedEnergyBlocks(block);
         }
       }
+    }
+  }
+}
+
+function discoverConnectedEnergyBlocks(startBlock) {
+  if (!startBlock || !ENERGY_BLOCK_IDS.has(startBlock.typeId)) {
+    return;
+  }
+
+  const dimension = getDimensionSafe(startBlock.dimension.id);
+  if (!dimension) {
+    return;
+  }
+
+  const queue = [floorLocation(startBlock.location)];
+  const visited = new Set();
+
+  while (queue.length > 0) {
+    const location = queue.shift();
+    const key = makeNodeKey(startBlock.dimension.id, location);
+    if (visited.has(key)) {
+      continue;
+    }
+
+    visited.add(key);
+
+    const block = getBlockSafe(dimension, location);
+    if (!block || !ENERGY_BLOCK_IDS.has(block.typeId)) {
+      continue;
+    }
+
+    registerEnergyNode(block);
+
+    for (const direction of DIRECTIONS) {
+      queue.push(addVector(location, direction));
     }
   }
 }
@@ -418,7 +453,7 @@ async function openOreWasherMenu(player, block) {
       return;
     }
 
-    registerEnergyNode(block);
+    discoverConnectedEnergyBlocks(block);
     const nodeKey = makeNodeKey(block.dimension.id, floorLocation(block.location));
     const node = trackedNodes.get(nodeKey);
     if (!node || node.descriptor.kind !== "consumer") {
@@ -459,7 +494,7 @@ function buildOreWasherForm(node, state) {
   const form = new ChestFormData("9");
   const progressText =
     state.activeOutputSlot === null ? "Idle" : `${state.progress}/${ORE_WASHER_CYCLE_TICKS}`;
-  const powerText = `Power: ${ORE_WASHER_WATTS} W/s`;
+  const powerText = `Power: ${formatWatts(ORE_WASHER_WATTS)}/s`;
   const storedDust = state.outputs.reduce((sum, count) => sum + count, 0);
   const inputLore = [
     `Cobblestone: ${state.input}/${ORE_WASHER_INPUT_CAPACITY}`,
@@ -495,7 +530,7 @@ function buildOreWasherForm(node, state) {
 }
 
 function handleOreWasherInteract(player, block) {
-  registerEnergyNode(block);
+  discoverConnectedEnergyBlocks(block);
   const nodeKey = makeNodeKey(block.dimension.id, floorLocation(block.location));
   const node = trackedNodes.get(nodeKey);
   if (!node || node.descriptor.kind !== "consumer") {
@@ -993,7 +1028,7 @@ function consumeEnergyForBlock(target, watts) {
   if (target?.dimension?.id && target?.location) {
     const location = floorLocation(target.location);
     const key = makeNodeKey(target.dimension.id, location);
-    registerEnergyNode(target);
+    discoverConnectedEnergyBlocks(target);
     node = trackedNodes.get(key);
   } else if (target?.dimensionId && target?.location) {
     const key = makeNodeKey(target.dimensionId, target.location);
@@ -1168,7 +1203,33 @@ function syncRegulatorHologram(node, watts) {
     dimension: getDimensionSafe(node.dimensionId),
   });
 
-  writeWattsToEntity(hologram, `${watts} W`);
+  writeWattsToEntity(hologram, formatWatts(watts));
+}
+
+function formatWatts(watts) {
+  const absoluteWatts = Math.abs(watts);
+  const units = [
+    { value: 1e12, suffix: " TW" },
+    { value: 1e9, suffix: " GW" },
+    { value: 1e6, suffix: " MW" },
+    { value: 1e3, suffix: " kW" },
+  ];
+
+  for (const unit of units) {
+    if (absoluteWatts < unit.value) {
+      continue;
+    }
+
+    const scaled = watts / unit.value;
+    const digits = Math.abs(scaled) >= 100 ? 0 : Math.abs(scaled) >= 10 ? 1 : 2;
+    return `${stripTrailingZeros(scaled.toFixed(digits))}${unit.suffix}`;
+  }
+
+  return `${stripTrailingZeros(watts.toFixed(0))} W`;
+}
+
+function stripTrailingZeros(value) {
+  return value.replace(/\.0+$|(\.\d*[1-9])0+$/, "$1");
 }
 
 function getOrCreateHologramForNode(node) {

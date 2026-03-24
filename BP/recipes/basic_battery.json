@@ -7,6 +7,11 @@
     "tags": [
       "crafting_table"
     ],
+    "unlock": [
+      {
+        "item": "wondercraft:basic_battery"
+      }
+    ],
     "ingredients": [
       {
         "item": "minecraft:copper_ingot"
