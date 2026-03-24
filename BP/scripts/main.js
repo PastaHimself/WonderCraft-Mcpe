@@ -279,6 +279,7 @@ function collectNetwork(startNode, visited) {
 
 function applyEnergyNetwork(nodes) {
   const generators = nodes.filter((node) => node.descriptor.kind === "generator");
+  const regulators = nodes.filter((node) => node.typeId === ENERGY_REGULATOR_TYPE_ID);
   const storages = nodes.filter((node) => node.descriptor.kind === "storage");
 
   for (const generator of generators) {
@@ -288,11 +289,12 @@ function applyEnergyNetwork(nodes) {
   chargeGenerators(generators);
 
   if (generators.length === 0) {
-    syncStorageDisplays(storages);
+    syncRegulatorDisplays(regulators, storages);
     return;
   }
 
   if (storages.length === 0) {
+    syncRegulatorDisplays(regulators, storages);
     return;
   }
 
@@ -329,7 +331,7 @@ function applyEnergyNetwork(nodes) {
   }
 
   drainGeneratorCharge(availableByPanel, acceptedTotal);
-  syncStorageDisplays(storages);
+  syncRegulatorDisplays(regulators, storages);
 }
 
 function refreshOreWasher(node) {
@@ -1034,7 +1036,8 @@ function consumeEnergyForBlock(target, watts) {
     stateDirty = true;
   }
 
-  syncStorageDisplays(storages);
+  const regulators = network.filter((networkNode) => networkNode.typeId === ENERGY_REGULATOR_TYPE_ID);
+  syncRegulatorDisplays(regulators, storages);
   return remaining <= 0;
 }
 
@@ -1111,17 +1114,16 @@ function drainGeneratorCharge(availableByPanel, acceptedTotal) {
   }
 }
 
-function syncStorageDisplays(storages) {
+function syncRegulatorDisplays(regulators, storages) {
   const totalStored = storages.reduce((sum, storage) => {
     return sum + (storageCharge.get(storage.key) ?? 0);
   }, 0);
 
-  for (const storage of storages) {
-    if (storage.typeId === ENERGY_REGULATOR_TYPE_ID) {
-      syncRegulatorHologram(storage, totalStored);
-      continue;
-    }
+  for (const regulator of regulators) {
+    syncRegulatorHologram(regulator, totalStored);
+  }
 
+  for (const storage of storages) {
     removeHologramForNode(storage);
   }
 }

@@ -1,12 +1,12 @@
 const REGULATOR_DEFAULTS = {
-  capacity: 10000,
-  maxInput: 2000,
-  maxOutput: 2000,
+  capacity: 0,
+  maxInput: 0,
+  maxOutput: 0,
 };
 
 export const STORAGE_NODE_DEFS = {
   "wondercraft:energy_regulator": {
-    kind: "storage",
+    kind: "transport",
     rate: 0,
     maxInput: REGULATOR_DEFAULTS.maxInput,
     maxOutput: REGULATOR_DEFAULTS.maxOutput,
