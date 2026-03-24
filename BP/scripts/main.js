@@ -289,12 +289,12 @@ function applyEnergyNetwork(nodes) {
   chargeGenerators(generators);
 
   if (generators.length === 0) {
-    syncRegulatorDisplays(regulators, storages);
+    syncRegulatorDisplays(regulators, storages, generators);
     return;
   }
 
   if (storages.length === 0) {
-    syncRegulatorDisplays(regulators, storages);
+    syncRegulatorDisplays(regulators, storages, generators);
     return;
   }
 
@@ -331,7 +331,7 @@ function applyEnergyNetwork(nodes) {
   }
 
   drainGeneratorCharge(availableByPanel, acceptedTotal);
-  syncRegulatorDisplays(regulators, storages);
+  syncRegulatorDisplays(regulators, storages, generators);
 }
 
 function refreshOreWasher(node) {
@@ -1005,17 +1005,37 @@ function consumeEnergyForBlock(target, watts) {
   }
 
   const network = collectNetwork(node, new Set());
+  const generators = network.filter((networkNode) => networkNode.descriptor.kind === "generator");
   const storages = network.filter((networkNode) => networkNode.descriptor.kind === "storage");
-  const available = storages.reduce(
-    (sum, storage) => sum + (storageCharge.get(storage.key) ?? 0),
-    0,
-  );
+  const available = getTotalAvailableWatts(storages, generators);
 
   if (available < watts) {
+    const regulators = network.filter((networkNode) => networkNode.typeId === ENERGY_REGULATOR_TYPE_ID);
+    syncRegulatorDisplays(regulators, storages, generators);
     return false;
   }
 
   let remaining = watts;
+  const orderedGenerators = [...generators].sort((left, right) => {
+    return getGeneratorAvailableOutput(right) - getGeneratorAvailableOutput(left);
+  });
+
+  for (const generator of orderedGenerators) {
+    if (remaining <= 0) {
+      break;
+    }
+
+    const current = generatorCharge.get(generator.key) ?? 0;
+    const used = Math.min(current, generator.descriptor.maxOutput, remaining);
+    if (used <= 0) {
+      continue;
+    }
+
+    generatorCharge.set(generator.key, current - used);
+    remaining -= used;
+    stateDirty = true;
+  }
+
   const orderedStorages = [...storages].sort((left, right) => {
     return (storageCharge.get(right.key) ?? 0) - (storageCharge.get(left.key) ?? 0);
   });
@@ -1037,7 +1057,7 @@ function consumeEnergyForBlock(target, watts) {
   }
 
   const regulators = network.filter((networkNode) => networkNode.typeId === ENERGY_REGULATOR_TYPE_ID);
-  syncRegulatorDisplays(regulators, storages);
+  syncRegulatorDisplays(regulators, storages, generators);
   return remaining <= 0;
 }
 
@@ -1114,10 +1134,18 @@ function drainGeneratorCharge(availableByPanel, acceptedTotal) {
   }
 }
 
-function syncRegulatorDisplays(regulators, storages) {
-  const totalStored = storages.reduce((sum, storage) => {
+function getTotalAvailableWatts(storages, generators) {
+  const stored = storages.reduce((sum, storage) => {
     return sum + (storageCharge.get(storage.key) ?? 0);
   }, 0);
+  const buffered = generators.reduce((sum, generator) => {
+    return sum + (generatorCharge.get(generator.key) ?? 0);
+  }, 0);
+  return stored + buffered;
+}
+
+function syncRegulatorDisplays(regulators, storages, generators) {
+  const totalStored = getTotalAvailableWatts(storages, generators);
 
   for (const regulator of regulators) {
     syncRegulatorHologram(regulator, totalStored);
